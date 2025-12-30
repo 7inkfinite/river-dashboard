@@ -179,7 +179,7 @@ function RiverResultsInner() {
     // -------- IG card state --------
     const [igAspect, setIgAspect] = React.useState<"1:1" | "4:5">("1:1")
     const [igIndex, setIgIndex] = React.useState(0)
-    const igTrackRef = React.useRef<HTMLDivElement | null>(null)
+    const igTrackRef = React.useRef<HTMLDivElement>(null!)
 
     const [igTweakOpen, setIgTweakOpen] = React.useState(false)
     const [igTweakText, setIgTweakText] = React.useState("")
