@@ -1,20 +1,32 @@
 # River Dashboard - Project Context
 
 ## Overview
-River is a product that converts YouTube videos to social media posts. This Next.js dashboard handles results display, content library, and editing functionality.
+River is an AI system that transforms YouTube videos into platform-specific social content. The platform supports Twitter threads, LinkedIn posts, and Instagram carousels through a workflow emphasizing iterative refinement.
+
+The system accepts YouTube URLs along with tone preferences and target platforms, extracts video transcripts via the YouTube API, checks for cached generations using deterministic keys, and generates content through OpenAI's gpt-4o-mini model. Results are stored in Supabase with full versioning support.
 
 ## Architecture
+
+River operates across three primary layers:
 
 ### Frontend (This Repo - river-dashboard)
 - **Framework**: Next.js 15 (App Router)
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS
+- **Styling**: Tailwind CSS (inline styles in components from Framer)
 - **Database Client**: Supabase JS Client
+- **Icons**: Lucide React
+- **Original Source**: Framer-based React/TSX interface (now migrated to Next.js)
 
-### Backend
-- **Workflow**: Pipedream (handles video processing)
-- **Database**: Supabase
-- **Landing Page**: Framer (separate - handles marketing and form submission)
+### Orchestration Layer
+- **Platform**: Pipedream workflows
+- **Function**: Coordinates 14-step processing pipeline
+- **Runtime**: Node.js serverless functions
+
+### Backend Services
+- **Content Generation**: OpenAI GPT-4o-mini
+- **Database & Caching**: Supabase (PostgreSQL)
+- **Transcript Extraction**: YouTube API / RapidAPI
+- **Landing Page**: Framer (handles marketing and form submission)
 
 ## Database Schema
 
@@ -49,19 +61,52 @@ Stores generated content for each platform
 - `metadata` - Additional metadata (JSON)
 - `created_at` - Timestamp
 
+## Supported Content Formats
+
+### Twitter/X Threads
+- **Length**: 8-12 tweets per thread
+- **Style**: Natural, conversational formatting
+- **Display**: TwitterThreadCard component
+
+### LinkedIn Posts
+- **Length**: 120-220 words
+- **Tone**: Professional, platform-appropriate
+- **Display**: LinkedInPostCard component
+
+### Instagram Carousels
+- **Slides**: 4-5 slides per carousel
+- **Layout**: Visual hierarchy optimized
+- **Aspect Ratios**: 1:1 or 4:5
+- **Display**: InstagramCarouselCard component
+
+## Key Technical Decisions
+
+### Caching Strategy
+Uses deterministic cache keys incorporating:
+- Video ID
+- Normalized tone
+- Sorted platforms
+- Prompt version
+This ensures consistency and prevents stale content.
+
+### State Management
+The system distinguishes between:
+- **Generation**: Initial content creation
+- **Tweak**: Iterative refinement
+Previous results are preserved during regeneration cycles for calm user feedback.
+
 ## Current Implementation Status
 
 ### ✅ Completed
 1. Dependencies installed (@supabase/supabase-js, lucide-react)
 2. Supabase client configured in `/lib/supabase.ts`
 3. Folder structure created (`/app/results`, `/components`, `/lib`)
-
-### 🚧 In Progress
-4. Moving Framer components to `/components`:
+4. Components migrated from Framer project:
    - TwitterThreadCard.tsx
    - LinkedInPostCard.tsx
    - InstagramCarouselCard.tsx
    - RiverResultsRoot.tsx
+   - UseRiverGeneration.tsx (custom hook)
 
 ### 📋 Pending
 5. Create `/app/results/page.tsx` with:
